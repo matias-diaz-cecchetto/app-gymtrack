@@ -49,4 +49,25 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Relación con las clases que entrena (solo si es 'Entrenador')
+     */
+    public function clasesEntrenadas() {
+        return $this->hasMany(ClassModel::class, 'entrenador_id');
+    }
+
+    /**
+     * Relación con las reservas de clases (solo si es 'Miembro')
+     */
+    public function reservas() {
+        return $this->hasMany(Reserva::class, 'miembro_id');
+    }
+
+    /**
+     * Relación con los progresos del usuario (Miembro o Entrenador que registra progreso)
+     */
+    public function progresos() {
+        return $this->hasMany(Progress::class, 'miembro_id');
+    }
 }
