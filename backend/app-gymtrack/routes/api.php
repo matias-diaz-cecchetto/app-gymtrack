@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ClassController;
 use App\Http\Controllers\MemberController;
 
 // Ruta de prueba de funcionamiento
@@ -35,4 +36,17 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/members/{id}', [MemberController::class, 'update']);
         Route::delete('/members/{id}', [MemberController::class, 'destroy']);
     });
+
+   // Listar clases
+   Route::get('/classes', [ClassController::class, 'index']);
+
+   // Crear y actualizar clases (solo administradores)
+   Route::middleware('role:Administrador')->group(function () {
+       Route::post('/classes', [ClassController::class, 'store']);
+       Route::put('/classes/{id}', [ClassController::class, 'update']);
+   });
+
+   // Reservar clase (solo miembros)
+   Route::middleware('role:Miembro')->post('/classes/{id}/reserve', [ClassController::class, 'reserve']);
+
 });
