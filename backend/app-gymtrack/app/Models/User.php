@@ -6,11 +6,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
+
+    public const ROLES = ['Administrador', 'Miembro', 'Entrenador'];
 
     /**
      * The attributes that are mass assignable.
@@ -21,6 +24,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'rol'
     ];
 
     /**
@@ -44,5 +48,26 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Relación con las clases que entrena (solo si es 'Entrenador')
+     */
+    public function clasesEntrenadas() {
+        return $this->hasMany(ClassModel::class, 'entrenador_id');
+    }
+
+    /**
+     * Relación con las reservas de clases (solo si es 'Miembro')
+     */
+    public function reservas() {
+        return $this->hasMany(Reserva::class, 'miembro_id');
+    }
+
+    /**
+     * Relación con los progresos del usuario (Miembro o Entrenador que registra progreso)
+     */
+    public function progresos() {
+        return $this->hasMany(Progress::class, 'miembro_id');
     }
 }
