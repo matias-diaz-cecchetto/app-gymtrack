@@ -54,7 +54,7 @@ class User extends Authenticatable
      * Relación con las clases que entrena (solo si es 'Entrenador')
      */
     public function clasesEntrenadas() {
-        return $this->hasMany(ClassModel::class, 'entrenador_id');
+        return $this->hasMany(Clase::class, 'entrenador_id');
     }
 
     /**
