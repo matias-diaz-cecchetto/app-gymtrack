@@ -12,34 +12,46 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+
+
     public function register(Request $request)
-{
-    try {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
-            'rol' => 'required|string|in:' . implode(',', User::ROLES),
-        ]);
+    {
+        try {
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'rol' => $validated['rol'], // Asignamos el rol validado
-        ]);
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|unique:users,email',
+                'password' => 'required|string|min:8|confirmed',
+                'rol' => 'required|string|in:' . implode(',', User::ROLES),
+            ]);
 
-        return response()->json([
-            'message' => 'Usuario registrado exitosamente',
-            'user' => $user,
-        ], 201);
-    } catch (\Exception $e) {
-        return response()->json([
-            'message' => 'Ocurrió un error durante el registro',
-            'error' => $e->getMessage(),
-        ], 500);
+            $user = User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => Hash::make($validated['password']),
+                'rol' => $validated['rol'],
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Usuario registrado exitosamente',
+                'data' => $user,
+            ], 201);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error de validación',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error durante el registro',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
-}
+
 
 
     public function login(Request $request)
